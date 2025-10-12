@@ -43,6 +43,10 @@ bool has_tolken(string line){
     return line.find("!", 0) == 0;
 }
 
+bool is_session(string line){
+    return line.find("#", 0) == 0;
+}
+
 string get_tolken(string line){
     int tolken_end = line.find(" ", 0);
     return line.substr(0, tolken_end);
@@ -93,13 +97,30 @@ string by_weekday(string line){
     return options[day];
 }
 
-string get_content(string line){
+string copy_last_day(string line){
+  return "";
+};
+
+string get_content(string line, string current_session){
     string tolken = get_tolken(line);
+
+    cout << current_session << "\n";
+
     if (tolken == "!weekday_only"){
         return weekday_only(line);
     };
     if (tolken == "!by_weekday"){
         return by_weekday(line);
+    };
+    if (tolken == "!copy_last_day"){
+// Pra copiar a sessão, o jeito mais 
+// performático que eu consigo pensar é 
+// manter um contexto de qual sessão eu tô 
+// e passar isso como argumento pra função get_content
+// e get_content passa pra frente caso necessário
+// A pergunta é, faz sentido implementar isso agora?
+// ou eu deveria ir no método força bruta antes?
+        return copy_last_day(line);
     };
     return "";
 }
@@ -108,7 +129,8 @@ int main() {
     string notes_dir = "/home/bella/Notes/";
 
     string template_location = notes_dir + "templates/Daily note template.md";
-    string note_location = notes_dir + get_note_name();
+    string note_name = get_note_name();
+    string note_location = notes_dir + note_name;
 
     struct stat buffer;   
     bool note_exists = (stat (note_location.c_str(), &buffer) == 0); 
@@ -120,9 +142,13 @@ int main() {
     ifstream template_content(template_location);
     ofstream note(note_location);
     string line;
+    string current_session = note_name;
     while (getline(template_content, line)){
+        if (is_session(line)){
+            current_session = line;
+        };
         if(has_tolken(line)){
-            note << get_content(line) << "\n";
+            note << get_content(line, current_session);
             continue;
         };
         note << line << "\n";
