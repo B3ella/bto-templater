@@ -114,7 +114,7 @@ int main() {
     bool note_exists = (stat (note_location.c_str(), &buffer) == 0); 
     if (note_exists){
         cout << "note exists";
-        return 1;
+        return 0;
     };
 
     ifstream template_content(template_location);
