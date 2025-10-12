@@ -96,31 +96,61 @@ string by_weekday(string line){
     int day = get_weekday();
     return options[day];
 }
+string get_yesterdays_note_name(){
+    time_t timestamp = time(&timestamp) - 60 * 60 * 24;
+    struct tm yesterday = *localtime(&timestamp);
 
-string copy_last_day(string line){
-  return "";
+    string year = to_string(1900 + yesterday.tm_year);
+    string month = stringfy(yesterday.tm_mon + 1, 2);
+    string day = stringfy(yesterday.tm_mday, 2);
+
+    string result = year + "-" + month + "-" + day + ".md";
+    return result;
+};
+
+string copy_last_day(string current_session){
+    string notes_dir = "/home/bella/Notes/";
+
+    string note_name = get_yesterdays_note_name();
+    string note_location = notes_dir + note_name;
+
+    ifstream note(note_location);
+    string line;
+    string result;
+    bool is_target_session = false;
+    while (getline(note, line)){
+        if (is_session(line)){
+            is_target_session = false;
+        };
+        if (line == current_session){
+            is_target_session = true;
+            continue;
+        };
+        if (!is_target_session){
+            continue;
+        };
+        result.append(line);
+        result.append("\n");
+    }
+    note.close();
+    return result;
 };
 
 string get_content(string line, string current_session){
     string tolken = get_tolken(line);
 
-    cout << current_session << "\n";
-
     if (tolken == "!weekday_only"){
-        return weekday_only(line);
+        string result = weekday_only(line);
+        result.append("\n");
+        return result;
     };
     if (tolken == "!by_weekday"){
-        return by_weekday(line);
+        string result = by_weekday(line);
+        result.append("\n");
+        return result;
     };
     if (tolken == "!copy_last_day"){
-// Pra copiar a sessão, o jeito mais 
-// performático que eu consigo pensar é 
-// manter um contexto de qual sessão eu tô 
-// e passar isso como argumento pra função get_content
-// e get_content passa pra frente caso necessário
-// A pergunta é, faz sentido implementar isso agora?
-// ou eu deveria ir no método força bruta antes?
-        return copy_last_day(line);
+        return copy_last_day(current_session);
     };
     return "";
 }
