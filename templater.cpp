@@ -71,7 +71,9 @@ bool is_weekday(){
 
 string weekday_only(string line){
     if (is_weekday()){
-        return remove_tolken(line);
+        string result = remove_tolken(line);
+        result.append("\n");
+        return result;
     }
     return "";
 }
@@ -141,7 +143,6 @@ string get_content(string line, string current_session){
 
     if (tolken == "!weekday_only"){
         string result = weekday_only(line);
-        result.append("\n");
         return result;
     };
     if (tolken == "!by_weekday"){
