@@ -96,7 +96,11 @@ string by_weekday(string line){
     }
 
     int day = get_weekday();
-    return options[day];
+    string result = options[day];
+    if (result.length() > 0){
+        result.append("\n");
+    };
+    return result;
 }
 string get_yesterdays_note_name(){
     time_t timestamp = time(&timestamp) - 60 * 60 * 24;
@@ -147,7 +151,6 @@ string get_content(string line, string current_session){
     };
     if (tolken == "!by_weekday"){
         string result = by_weekday(line);
-        result.append("\n");
         return result;
     };
     if (tolken == "!copy_last_day"){
