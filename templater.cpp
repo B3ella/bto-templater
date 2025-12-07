@@ -39,12 +39,16 @@ void print(string str){
     cout << "\n";
 }
 
+bool starts_with(string str, string target){
+    return str.find(target, 0) == 0;
+}
+
 bool has_tolken(string line){
-    return line.find("!", 0) == 0;
+    return starts_with(line, "!")
 }
 
 bool is_session(string line){
-    return line.find("#", 0) == 0;
+    return starts_with(line, "#")
 }
 
 string get_tolken(string line){
@@ -135,7 +139,7 @@ string copy_last_day(string current_session){
         if (!is_target_session){
             continue;
         };
-        if (line.find("- [x]", 0) == 0){
+        if (starts_with(line, "- [x]")){
             continue;
         };
         result.append(line);
