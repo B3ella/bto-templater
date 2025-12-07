@@ -135,6 +135,9 @@ string copy_last_day(string current_session){
         if (!is_target_session){
             continue;
         };
+        if (line.find("- [x]", 0) == 0){
+            continue;
+        };
         result.append(line);
         result.append("\n");
     }
