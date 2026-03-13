@@ -24,9 +24,15 @@ string stringfy(int value, int size){
     return pad + str;
 }
 
-string get_note_name(){
+struct tm get_today(){
     time_t timestamp = time(&timestamp);
-    struct tm today = *localtime(&timestamp);
+    struct tm today;
+    localtime_r(&timestamp, &today);
+    return today;
+}
+
+string get_note_name(){
+    auto today = get_today();
     string year = to_string(1900 + today.tm_year);
     string month = stringfy(today.tm_mon + 1, 2);
     string day = stringfy(today.tm_mday, 2);
@@ -44,11 +50,11 @@ bool starts_with(string str, string target){
 }
 
 bool has_tolken(string line){
-    return starts_with(line, "!")
+    return starts_with(line, "!");
 }
 
 bool is_session(string line){
-    return starts_with(line, "#")
+    return starts_with(line, "#");
 }
 
 string get_tolken(string line){
@@ -62,8 +68,7 @@ string remove_tolken(string line){
 }
 
 int get_weekday(){
-    time_t timestamp = time(&timestamp);
-    struct tm today = *localtime(&timestamp);
+    auto today = get_today();
     int day = today.tm_wday;
     return day;
 }
@@ -108,7 +113,8 @@ string by_weekday(string line){
 }
 string get_yesterdays_note_name(){
     time_t timestamp = time(&timestamp) - 60 * 60 * 24;
-    struct tm yesterday = *localtime(&timestamp);
+    struct tm yesterday;
+    localtime_r(&timestamp, &yesterday);
 
     string year = to_string(1900 + yesterday.tm_year);
     string month = stringfy(yesterday.tm_mon + 1, 2);
