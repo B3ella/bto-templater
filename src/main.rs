@@ -29,18 +29,27 @@ fn create_daily_note(date: DateTime<Local>) {
     let _ = file.expect("File createon failed").write_all(note.as_bytes());
 }
 
+fn note_exists(date: DateTime<Local>) -> bool {
+    let note_name = date_to_file_name(date);
+    let result = fs::exists(note_name).expect("The file system is throwing an error?");
+    return result
+}
+
+fn date_to_file_name(date: DateTime<Local>) -> String {
+    let year = date.year();
+    let month = date.month();
+    let day = date.day();
+    let file_name = format!("{}-{:0>2}-{:0>2}.md", year, month, day);
+    let base_path = "/home/bella/Notes/".to_string();
+    base_path + &file_name
+}
+
 fn read_file(path: &str) -> String {
     let file = File::open(path);
     let mut contents = String::new();
     let _ = file.expect("Failed to read file {}").read_to_string(&mut contents);
     return contents
 } 
-
-fn note_exists(date: DateTime<Local>) -> bool {
-    let note_name = date_to_file_name(date);
-    let result = fs::exists(note_name).expect("The file system is throwing an error?");
-    return result
-}
 
 fn process_tokens(template: &str, yesterday: &str) -> String {
     let mut result = "".to_string();
@@ -76,13 +85,4 @@ fn get_section_text(section: &str, yesterday: &str) -> String {
     }
     println!("{}", result);
     return result
-}
-
-fn date_to_file_name(date: DateTime<Local>) -> String {
-    let year = date.year();
-    let month = date.month();
-    let day = date.day();
-    let file_name = format!("{}-{:0>2}-{:0>2}.md", year, month, day);
-    let base_path = "/home/bella/Notes/".to_string();
-    base_path + &file_name
 }
