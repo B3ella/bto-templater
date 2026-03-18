@@ -83,6 +83,5 @@ fn get_section_text(section: &str, yesterday: &str) -> String {
             copy = true;
         }
     }
-    println!("{}", result);
     return result
 }
