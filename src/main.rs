@@ -95,3 +95,20 @@ fn should_skip(line: &str, dont_copy: &[&str; 1]) -> bool {
     };
     return false
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test() {
+        let template = read_file("test_data/template.md");
+        let yesterday = read_file("test_data/yesterday.md");
+
+        let result  = process_tokens(&template, &yesterday);
+
+        let expected = read_file("test_data/expected.md");
+        assert_eq!(result, expected);
+    }
+}
