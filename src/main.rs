@@ -54,12 +54,13 @@ fn read_file(path: &str) -> String {
 fn process_tokens(template: &str, yesterday: &str) -> String {
     let mut result = "".to_string();
     let mut current_section = "";
+    let dont_copy = ["- [x]"];
     for line in template.lines() {
         if line.starts_with("#") {
             current_section = line;
         }
         if line.contains("!copy_last_day") {
-            result += &get_section_text(current_section, &yesterday);
+            result += &get_section_text(&current_section, &yesterday, &dont_copy);
             result += "\n";
             continue
         }
@@ -68,14 +69,14 @@ fn process_tokens(template: &str, yesterday: &str) -> String {
     }
     return result
 }
-fn get_section_text(section: &str, yesterday: &str) -> String {
+fn get_section_text(section: &str, yesterday: &str, dont_copy: &[&str; 1]) -> String {
     let mut result = "".to_string();
     let mut copy = false;
     for line in yesterday.lines() {
         if line.starts_with("#") {
             copy = false;
         }
-        if copy {
+        if copy &! should_skip(line, dont_copy) {
             result += line;
             result += "\n";
         }
@@ -84,4 +85,13 @@ fn get_section_text(section: &str, yesterday: &str) -> String {
         }
     }
     return result
+}
+
+fn should_skip(line: &str, dont_copy: &[&str; 1]) -> bool {
+    for token in dont_copy {
+        if line.starts_with(token) {
+            return true
+        };
+    };
+    return false
 }
