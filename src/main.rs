@@ -84,7 +84,7 @@ fn get_section_text(section: &str, yesterday: &str, dont_copy: &[&str; 1]) -> St
             copy = true;
         }
     }
-    return result
+    return result.trim().to_string()
 }
 
 fn should_skip(line: &str, dont_copy: &[&str; 1]) -> bool {
