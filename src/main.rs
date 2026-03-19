@@ -22,7 +22,7 @@ fn create_daily_note(date: DateTime<Local>) {
 
     let template = read_file("/home/bella/Notes/templates/dnt.md");
 
-    let note = process_tokens(&template, &yesterday);
+    let note = process_tokens(&template, &yesterday, date);
     let path = date_to_file_name(date);
 
     let file = File::create(path);
@@ -51,7 +51,7 @@ fn read_file(path: &str) -> String {
     return contents
 } 
 
-fn process_tokens(template: &str, yesterday: &str) -> String {
+fn process_tokens(template: &str, yesterday: &str, date: DateTime<Local>) -> String {
     let mut result = "".to_string();
     let mut current_section = "";
     let dont_copy = ["- [x]"];
@@ -61,6 +61,11 @@ fn process_tokens(template: &str, yesterday: &str) -> String {
         }
         if line.contains("!copy_last_day") {
             result += &get_section_text(&current_section, &yesterday, &dont_copy);
+            result += "\n";
+            continue
+        }
+        if line.starts_with("!by_weekday") {
+            result += &by_weekday(line, date);
             result += "\n";
             continue
         }
@@ -96,6 +101,18 @@ fn should_skip(line: &str, dont_copy: &[&str; 1]) -> bool {
     return false
 }
 
+fn by_weekday(line: &str, date: DateTime<Local>) -> String{
+    let start_bytes = line
+        .find("[").expect("no opening brackets found in by weekday template line");
+    let end_bytes = line.find("]")
+        .expect("no closing brackets found in by weekday template line");
+    let result = &line[start_bytes+1..end_bytes];
+    let content_by_day: Vec<&str> = result.split(";").collect();
+    let index = date.weekday().num_days_from_sunday();
+    let index = usize::try_from(index).expect("Cannot convert weekday to usize");
+    return content_by_day[index].to_string();
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -106,7 +123,11 @@ mod tests {
         let template = read_file("test_data/template.md");
         let yesterday = read_file("test_data/yesterday.md");
 
-        let result  = process_tokens(&template, &yesterday);
+        let date = "2026-03-18T12:12:12Z"
+            .parse::<DateTime<Local>>()
+            .expect("Error converting date to local");
+
+        let result  = process_tokens(&template, &yesterday, date);
 
         let expected = read_file("test_data/expected.md");
         assert_eq!(result, expected);

@@ -2,4 +2,4 @@
 - [ ] item 1
 - [ ] item 3
 ## test 2
-!by_weekday [;;;aula de violão às 16:00;;;]
+aula de violão às 16:00
